@@ -34,18 +34,6 @@ class SkillLoader:
             meta = json.loads(manifest.read_text(encoding="utf-8"))
             system_prompt = prompt_file.read_text(encoding="utf-8")
 
-            # Append reference files if any
-            refs_dir = child / "references"
-            if refs_dir.is_dir():
-                ref_parts = []
-                for ref in sorted(refs_dir.iterdir()):
-                    if ref.is_file() and ref.suffix == ".md":
-                        ref_parts.append(
-                            f"\n\n---\n## 参考资料: {ref.stem}\n\n{ref.read_text(encoding='utf-8')}"
-                        )
-                if ref_parts:
-                    system_prompt += "\n".join(ref_parts)
-
             # Resolve image path to API URL
             image = meta.get("image", "")
             if image and not image.startswith("http"):
