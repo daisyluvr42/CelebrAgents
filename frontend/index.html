@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CelebrAgents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== HOME VIEW: Card grid ===== -->
+    <div id="home-view">
+      <header class="home-header">
+        <div class="home-brand">
+          <h1 class="logo">CelebrAgents</h1>
+          <p class="tagline">Step into the minds of the world's most fascinating figures</p>
+        </div>
+        <div class="home-provider">
+          <label for="provider-select" class="provider-label">Provider</label>
+          <select id="provider-select" aria-label="Select LLM provider"></select>
+        </div>
+      </header>
+
+      <section class="card-grid" id="card-grid" role="list" aria-label="Available skills">
+        <!-- Cards injected by JS -->
+      </section>
+    </div>
+
+    <!-- ===== CREATE MODAL ===== -->
+    <div id="create-modal" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Create New Skill</h2>
+          <button id="modal-close" class="icon-btn" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <!-- Step 1: Input -->
+        <div id="create-step-input" class="modal-body">
+          <p class="modal-desc">Enter a person's name to distill their cognitive framework into a runnable Skill, powered by Nuwa methodology.</p>
+          <div class="form-group">
+            <label for="create-name">Person Name</label>
+            <input type="text" id="create-name" placeholder="e.g. Warren Buffett, 任正非, Sam Altman..." autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="create-context">Extra Context <span class="optional">(optional)</span></label>
+            <textarea id="create-context" rows="3" placeholder="Focus areas, specific use case, or additional notes..."></textarea>
+          </div>
+          <button id="create-start-btn" class="btn-primary" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Generate Skill
+          </button>
+        </div>
+
+        <!-- Step 2: Generating -->
+        <div id="create-step-progress" class="modal-body hidden">
+          <div class="progress-header">
+            <div class="progress-spinner"></div>
+            <span id="progress-label">Generating skill...</span>
+          </div>
+          <div id="create-output" class="create-output"></div>
+        </div>
+
+        <!-- Step 3: Done -->
+        <div id="create-step-done" class="modal-body hidden">
+          <div class="done-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3 id="done-title">Skill created!</h3>
+          <p id="done-desc">You can now chat with this persona.</p>
+          <button id="done-chat-btn" class="btn-primary">Start Chatting</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CHAT VIEW ===== -->
+    <div id="chat-view" class="hidden">
+      <!-- Chat header -->
+      <header class="chat-header">
+        <button id="back-btn" class="icon-btn" aria-label="Back to home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="chat-header-info">
+          <img id="chat-header-img" class="chat-header-avatar" src="" alt="">
+          <div>
+            <span class="chat-header-name" id="chat-header-name"></span>
+            <span class="chat-header-provider" id="chat-header-provider"></span>
+          </div>
+        </div>
+        <button id="clear-btn" class="icon-btn" aria-label="Clear chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+      </header>
+
+      <!-- Messages -->
+      <div id="messages" role="log" aria-live="polite" aria-label="Chat messages"></div>
+
+      <!-- Input -->
+      <div id="input-bar">
+        <div class="input-wrapper">
+          <textarea id="user-input" rows="1" placeholder="Send a message..." aria-label="Chat message input"></textarea>
+          <button id="send-btn" disabled aria-label="Send message">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <div class="input-hint">Enter to send &middot; Shift+Enter for new line</div>
+      </div>
+    </div>
+
+  </div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
