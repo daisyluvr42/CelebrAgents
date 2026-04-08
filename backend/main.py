@@ -40,6 +40,16 @@ def list_providers():
     return {
         "current": config.LLM_PROVIDER,
         "available": ["openai", "anthropic", "google"],
+        "models": {
+            "openai": ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "o4-mini"],
+            "anthropic": ["claude-sonnet-4-20250514", "claude-haiku-4-5-20251001", "claude-opus-4-20250918"],
+            "google": ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.0-flash"],
+        },
+        "default_models": {
+            "openai": config.OPENAI_MODEL,
+            "anthropic": config.ANTHROPIC_MODEL,
+            "google": config.GOOGLE_MODEL,
+        },
     }
 
 
@@ -49,6 +59,7 @@ async def chat(request: Request):
     skill_id: str = body["skill_id"]
     messages: list[dict] = body["messages"]
     provider_name: str = body.get("provider", config.LLM_PROVIDER)
+    model: str | None = body.get("model")
 
     skill = skill_loader.get_skill(skill_id)
     if skill is None:
@@ -58,7 +69,7 @@ async def chat(request: Request):
 
     async def generate():
         try:
-            async for chunk in provider.stream_chat(skill.system_prompt, messages):
+            async for chunk in provider.stream_chat(skill.system_prompt, messages, model=model):
                 yield f"data: {json.dumps({'text': chunk})}\n\n"
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"

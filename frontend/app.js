@@ -2,11 +2,14 @@ const API = window.CELEBR_API || window.location.origin;
 let currentSkill = null;
 let allSkills = [];
 let messages = [];
+let providerModels = {};
+let defaultModels = {};
 let isStreaming = false;
 let createdSkillId = null;
 
 // --- DOM refs ---
 const providerSelect = document.getElementById("provider-select");
+const modelSelect = document.getElementById("model-select");
 const cardGrid = document.getElementById("card-grid");
 const homeView = document.getElementById("home-view");
 const chatView = document.getElementById("chat-view");
@@ -39,6 +42,20 @@ function skillImage(path) {
   return `${API}${path}`;
 }
 
+function updateModelSelect() {
+  const provider = providerSelect.value;
+  const models = providerModels[provider] || [];
+  const defaultModel = defaultModels[provider] || "";
+  modelSelect.innerHTML = "";
+  models.forEach((m) => {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    opt.selected = m === defaultModel;
+    modelSelect.appendChild(opt);
+  });
+}
+
 // --- Init ---
 async function init() {
   const [providers, skills] = await Promise.all([
@@ -47,6 +64,8 @@ async function init() {
   ]);
 
   allSkills = skills;
+  providerModels = providers.models || {};
+  defaultModels = providers.default_models || {};
 
   providers.available.forEach((p) => {
     const opt = document.createElement("option");
@@ -55,6 +74,9 @@ async function init() {
     opt.selected = p === providers.current;
     providerSelect.appendChild(opt);
   });
+
+  updateModelSelect();
+  providerSelect.addEventListener("change", updateModelSelect);
 
   renderCards();
 }
@@ -117,7 +139,7 @@ function enterChat(skill) {
     chatHeaderImg.style.display = "none";
   }
   chatHeaderName.textContent = skill.name;
-  chatHeaderProvider.textContent = providerSelect.options[providerSelect.selectedIndex].text;
+  chatHeaderProvider.textContent = modelSelect.value;
 
   homeView.classList.add("hidden");
   chatView.classList.remove("hidden");
@@ -203,6 +225,7 @@ async function sendMessage() {
         skill_id: currentSkill.id,
         messages: messages.slice(0, -1).map((m) => ({ role: m.role, content: m.content })),
         provider: providerSelect.value,
+        model: modelSelect.value,
       }),
     });
 
