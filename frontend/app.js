@@ -33,6 +33,12 @@ const progressLabel = document.getElementById("progress-label");
 const doneChatBtn = document.getElementById("done-chat-btn");
 const doneTitle = document.getElementById("done-title");
 
+function skillImage(path) {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${API}${path}`;
+}
+
 // --- Init ---
 async function init() {
   const [providers, skills] = await Promise.all([
@@ -62,7 +68,7 @@ function renderCards() {
     card.setAttribute("role", "listitem");
 
     const imageHtml = skill.image
-      ? `<div class="card-image"><img src="${skill.image}" alt="${escapeHtml(skill.name)}" loading="lazy"></div>`
+      ? `<div class="card-image"><img src="${skillImage(skill.image)}" alt="${escapeHtml(skill.name)}" loading="lazy"></div>`
       : `<div class="card-image-placeholder">${skill.avatar || "&#x1f916;"}</div>`;
 
     const tagsHtml = (skill.tags || [])
@@ -105,7 +111,7 @@ function enterChat(skill) {
   messages = [];
 
   if (skill.image) {
-    chatHeaderImg.src = skill.image;
+    chatHeaderImg.src = skillImage(skill.image);
     chatHeaderImg.style.display = "block";
   } else {
     chatHeaderImg.style.display = "none";
@@ -134,7 +140,7 @@ function renderMessages() {
     const intro = document.createElement("div");
     intro.className = "chat-intro";
     const imgHtml = currentSkill.image
-      ? `<img class="intro-avatar" src="${currentSkill.image}" alt="${escapeHtml(currentSkill.name)}">`
+      ? `<img class="intro-avatar" src="${skillImage(currentSkill.image)}" alt="${escapeHtml(currentSkill.name)}">`
       : `<div class="intro-avatar" style="display:flex;align-items:center;justify-content:center;font-size:32px;background:var(--bg-elevated);">${currentSkill.avatar || "&#x1f916;"}</div>`;
     intro.innerHTML = `
       ${imgHtml}
